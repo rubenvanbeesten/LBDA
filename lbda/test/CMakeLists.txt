@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.2)
 
 enable_testing()
 
-find_package(Gurobi REQUIRED)
+#find_package(Gurobi REQUIRED)
+find_package(GUROBI REQUIRED) #changed to uppercase
 include_directories(${GUROBI_INCLUDE_DIRS})
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 

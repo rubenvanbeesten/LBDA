@@ -23,6 +23,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
 
 include_directories(include)
+include_directories(external/armadillo/include)
+#include_directories("C:/Armadillo/armadillo-11.4.2/include")
+
+#add_subdirectory(external/armadillo) #doesn't work
+
 
 add_subdirectory(vendor)
 

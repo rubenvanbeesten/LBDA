@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
 
-find_package(Gurobi REQUIRED)
+#find_package(Gurobi REQUIRED)
+find_package(GUROBI REQUIRED)
 include_directories(${GUROBI_INCLUDE_DIRS})
 
 set(cutFamiliesSources
