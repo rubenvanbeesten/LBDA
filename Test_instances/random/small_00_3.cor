@@ -1,0 +1,129 @@
+NAME Deterministic Equivalent
+ROWS
+ N  OBJ
+ E  R0      
+ E  R1      
+ E  R2      
+ E  R3      
+ E  R4      
+COLUMNS
+    x0        OBJ       3
+    x0        R0        4
+    x0        R1        1
+    x0        R2        4
+    x0        R3        4
+    x0        R4        1
+    x1        OBJ       3
+    x1        R0        1
+    x1        R1        5
+    x1        R2        3
+    x1        R3        1
+    x1        R4        3
+    x2        OBJ       1
+    x2        R0        3
+    x2        R1        2
+    x2        R2        4
+    x2        R3        3
+    x2        R4        5
+    x3        OBJ       1
+    x3        R0        4
+    x3        R1        5
+    x3        R2        2
+    x3        R3        5
+    x3        R4        3
+    x4        OBJ       2
+    x4        R0        1
+    x4        R1        3
+    x4        R2        1
+    x4        R3        1
+    x4        R4        2
+    x5        OBJ       4
+    x5        R0        1
+    x5        R1        5
+    x5        R2        4
+    x5        R3        1
+    x5        R4        2
+    x6        OBJ       3
+    x6        R0        1
+    x6        R1        2
+    x6        R2        5
+    x6        R3        5
+    x6        R4        2
+    x7        OBJ       1
+    x7        R0        4
+    x7        R1        3
+    x7        R2        4
+    x7        R3        5
+    x7        R4        4
+    x8        OBJ       3
+    x8        R0        3
+    x8        R1        3
+    x8        R2        4
+    x8        R3        5
+    x8        R4        5
+    x9        OBJ       2
+    x9        R0        2
+    x9        R1        3
+    x9        R2        1
+    x9        R3        3
+    x9        R4        3
+    MARKER    'MARKER'                 'INTORG'
+    y0        OBJ       5
+    y0        R0        3
+    y0        R1        1
+    y0        R2        5
+    y0        R3        1
+    y0        R4        2
+    y1        OBJ       9
+    y1        R0        3
+    y1        R1        3
+    y1        R2        5
+    y1        R3        5
+    y1        R4        5
+    y2        OBJ       6
+    y2        R0        1
+    y2        R1        4
+    y2        R2        3
+    y2        R3        3
+    y2        R4        5
+    y3        OBJ       6
+    y3        R0        4
+    y3        R1        3
+    y3        R2        1
+    y3        R3        4
+    y3        R4        5
+    y4        OBJ       9
+    y4        R0        5
+    y4        R1        5
+    y4        R2        4
+    y4        R3        1
+    y4        R4        5
+    MARKER    'MARKER'                 'INTEND'
+    u0        R0        -1
+    v0        OBJ       10000000000
+    v0        R0        1
+    u1        R1        -1
+    v1        OBJ       10000000000
+    v1        R1        1
+    u2        R2        -1
+    v2        OBJ       10000000000
+    v2        R2        1
+    u3        R3        -1
+    v3        OBJ       10000000000
+    v3        R3        1
+    u4        R4        -1
+    v4        OBJ       10000000000
+    v4        R4        1
+RHS
+    RHS1      R0        1.1781809638147777e+01
+    RHS1      R1        3.3749061418974961e+01
+    RHS1      R2        1.8459223012677271e+00
+    RHS1      R3        1.4123749989997878e+01
+    RHS1      R4        2.0863060807450564e+00
+BOUNDS
+ LI BND1      y0        0
+ LI BND1      y1        0
+ LI BND1      y2        0
+ LI BND1      y3        0
+ LI BND1      y4        0
+ENDATA

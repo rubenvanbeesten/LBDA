@@ -1,0 +1,5 @@
+TIME          Deterministic Equivalent
+PERIODS
+    x0        R0                       PERIOD1
+    y0        R0                       PERIOD2
+ENDATA
