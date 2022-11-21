@@ -22,6 +22,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
 
+# FIND_PACKAGE(carma CONFIG REQUIRED)
+
 include_directories(include)
 
 add_subdirectory(vendor)

@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.2)
 
 find_package(Gurobi REQUIRED)
+
+# find_package(Gurobi REQUIRED NAMES gurobi gurobi1000   HINTS ${GUROBI_DIR} $ENV{GUROBI_HOME}    PATH_SUFFIXES lib)      
+# find_package(GUROBI REQUIRED)
+
 include_directories(${GUROBI_INCLUDE_DIRS})
 
 set(cutFamiliesSources
@@ -28,12 +32,23 @@ add_library(lbda
         ${cutFamiliesSources}
         ${smpsSources}
         ${lbdaSources})
-target_link_libraries(lbda PRIVATE armadillo ${GUROBI_LIBRARIES})
+target_link_libraries(lbda PRIVATE armadillo ${GUROBI_LIBRARIES}) #ORIGINAL
+# target_link_libraries(lbda PRIVATE armadillo ${GUROBI_LIBRARIES} carma) 
+# target_link_libraries(lbda PRIVATE armadillo ${GUROBI_LIBRARIES} carma::carma) 
+
+message("GUROBI_LIBRARIES: ${GUROBI_LIBRARIES}")
 
 # Command-line executable for the LBDA+ code
 add_executable(lbdaexec main.cpp)
-target_link_libraries(lbdaexec PRIVATE armadillo ${GUROBI_LIBRARIES} lbda)
+target_link_libraries(lbdaexec PRIVATE armadillo ${GUROBI_LIBRARIES} lbda) #ORIGINAL
+# target_link_libraries(lbdaexec PRIVATE armadillo ${GUROBI_CXX_LIBRARY} ${GUROBI_C_LIBRARY} lbda)
+# target_link_libraries(lbdaexec PRIVATE armadillo ${GUROBI_LIBRARIES} lbda carma)
+# target_link_libraries(lbdaexec PRIVATE armadillo ${GUROBI_LIBRARIES} lbda carma::carma)
 
 # LBDA+ code, with Python bindings for use there
 pybind11_add_module(lbdapy bindings.cpp)
-target_link_libraries(lbdapy PRIVATE armadillo ${GUROBI_LIBRARIES} lbda)
+# TRY JUST NOT BUILDING IT:
+# target_link_libraries(lbdapy PRIVATE armadillo ${GUROBI_LIBRARIES} lbda) #ORIGINAL
+# target_link_libraries(lbdapy PRIVATE armadillo ${GUROBI_LIBRARIES} lbda carma)
+# target_link_libraries(lbdapy PRIVATE armadillo ${GUROBI_LIBRARIES} lbda carma::carma) 
+

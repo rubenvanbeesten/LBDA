@@ -4,7 +4,7 @@ set(GUROBI_HOME "$ENV{GUROBI_HOME}")
 
 find_library(
         GUROBI_C_LIBRARY
-        NAMES libgurobi90.so gurobi90.lib
+        NAMES libgurobi90.so gurobi90.lib libgurobi100.so gurobi100.lib
         PATHS "${GUROBI_HOME}/lib")
 
 find_library(GUROBI_CXX_LIBRARY
@@ -27,3 +27,5 @@ if (GUROBI_FOUND)
             GUROBI_C_LIBRARY
             GUROBI_HOME)
 endif ()
+
+message("Gurobi is found. GUROBI_CXX_LIBRARY: ${GUROBI_CXX_LIBRARY}, GUROBI_C_LIBRARY: ${GUROBI_C_LIBRARY}")
