@@ -13,6 +13,10 @@
 #include <stdexcept>
 #include <unistd.h>
 
+// new
+#include <vector>
+#include "risk_measure.h"
+
 auto const USAGE = R"(
 LBDA+. A program for solving two-stage mixed-integer stochastic programs.
 
@@ -66,6 +70,10 @@ struct Arguments
     double lb = 0;                          // lower bound on theta
     double ub = arma::datum::inf;           // upper bound on theta
     std::string file;                       // smps file location
+
+    // new
+    std::string lambdaString;               // vector of lambdas for risk measure
+    std::string betaString;                 // vector of betas for risk measure
 };
 
 using argument_t = struct Arguments;

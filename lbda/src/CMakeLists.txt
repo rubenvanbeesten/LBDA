@@ -25,7 +25,8 @@ set(lbdaSources
         deterministicequivalent.cpp
         masterproblem.cpp
         problemdata.cpp
-        subproblem.cpp)
+        subproblem.cpp
+        risk_measure.cpp)
 
 # (Internal) library
 add_library(lbda

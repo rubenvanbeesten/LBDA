@@ -1,0 +1,1 @@
+g++ main.cpp risk_measure.cpp -o prototype
