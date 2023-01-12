@@ -9,7 +9,7 @@ include_directories(${GUROBI_INCLUDE_DIRS})
 
 set(cutFamiliesSources
         cutfamilies/cutfamily.cpp
-        cutfamilies/loosebenders.cpp
+        cutfamilies/loosebenders_new.cpp
         cutfamilies/lpdual.cpp
         cutfamilies/strongbenders.cpp)
 
@@ -22,7 +22,7 @@ set(smpsSources
         smps/timeparser.cpp)
 
 set(lbdaSources
-        deterministicequivalent.cpp
+        deterministicequivalent_new.cpp
         masterproblem.cpp
         problemdata.cpp
         subproblem.cpp
@@ -47,8 +47,8 @@ target_link_libraries(lbdaexec PRIVATE armadillo ${GUROBI_LIBRARIES} lbda) #ORIG
 # target_link_libraries(lbdaexec PRIVATE armadillo ${GUROBI_LIBRARIES} lbda carma::carma)
 
 # LBDA+ code, with Python bindings for use there
-pybind11_add_module(lbdapy bindings.cpp)
 # TRY JUST NOT BUILDING IT:
+# pybind11_add_module(lbdapy bindings.cpp)
 # target_link_libraries(lbdapy PRIVATE armadillo ${GUROBI_LIBRARIES} lbda) #ORIGINAL
 # target_link_libraries(lbdapy PRIVATE armadillo ${GUROBI_LIBRARIES} lbda carma)
 # target_link_libraries(lbdapy PRIVATE armadillo ${GUROBI_LIBRARIES} lbda carma::carma) 

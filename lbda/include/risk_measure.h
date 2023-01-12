@@ -13,11 +13,11 @@
 // Risk measure class
 class RiskMeasure
 {
-protected:
+public:
+    // main properties
     std::vector<double> lambdas;
     std::vector<double> betas;
 
-public:
     // constructor
     RiskMeasure(std::vector<double> lambdas_new, std::vector<double> betas_new);
 

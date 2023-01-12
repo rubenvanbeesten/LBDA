@@ -9,6 +9,8 @@
 #include <iosfwd>
 #include <memory>
 
+#include "risk_measure.h"
+
 /**
  * First-stage (master) problem of the two-stage decomposition.
  */
@@ -18,6 +20,8 @@ class MasterProblem
 
     ProblemData const &d_problem;
     GRBModel d_model;
+
+    RiskMeasure const &d_risk_measure;
 
     /**
      * Adds cut <code>theta >= beta^T x + gamma</code>.
@@ -35,8 +39,10 @@ public:
      * @param upperBound    Upper bound for theta. Default +inf.
      */
     MasterProblem(ProblemData const &problem,
+                  RiskMeasure const &risk_measure,
                   double lowerBound = 0.,
-                  double upperBound = arma::datum::inf);
+                  double upperBound = arma::datum::inf
+                  );
 
     /**
      * Solves the master problem using the given cutting strategy. The
@@ -70,6 +76,12 @@ public:
     {
         return d_model.get(GRB_DoubleAttr_ObjVal);
     }
+
+    /**
+     * Returns the variable names of the master problem
+     */
+    std::vector<std::string> getVarNames();
+
 };
 
 #endif

@@ -1,10 +1,11 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#include "cutfamilies/loosebenders.h"
+//#include "cutfamilies/loosebenders.h"
+#include "cutfamilies/loosebenders_new.h"
 #include "cutfamilies/lpdual.h"
 #include "cutfamilies/strongbenders.h"
-#include "deterministicequivalent.h"
+//#include "deterministicequivalent.h"
 #include "masterproblem.h"
 
 #include <cstring>
@@ -15,7 +16,12 @@
 
 // new
 #include <vector>
+#include <chrono>
+#include <fstream>
+#include<sys/stat.h>    // mkdir
+#include<sys/types.h>   // mkdir
 #include "risk_measure.h"
+#include "deterministicequivalent_new.h"
 
 auto const USAGE = R"(
 LBDA+. A program for solving two-stage mixed-integer stochastic programs.
@@ -72,8 +78,8 @@ struct Arguments
     std::string file;                       // smps file location
 
     // new
-    std::string lambdaString;               // vector of lambdas for risk measure
-    std::string betaString;                 // vector of betas for risk measure
+    std::string lambdaString = "1.0";       // vector of lambdas for risk measure (initialized at expectation settings)
+    std::string betaString = "0.0";         // vector of betas for risk measure (initialized at expectation settings)
 };
 
 using argument_t = struct Arguments;
@@ -98,6 +104,16 @@ argument_t parseArguments(int argc, char **argv);
  * @param method    Solution method used - the deterministic equivalent, or the
  *                  first-stage master problem.
  */
-template<class T> void printSolution(arma::vec const &decisions, T &method);
+template<class T> void printSolution(arma::vec const &decisions, T &method, std::chrono::milliseconds sol_time);
+
+/**
+ * Writes the (near) optimal first-stage decisions passed in, and some objective
+ * information derived from the method to a file.
+ *
+ * @param decisions Near optimal first-stage decisions, as a vector.
+ * @param method    Solution method used - the deterministic equivalent, or the
+ *                  first-stage master problem.
+ */
+template<class T> void writeSolution(arma::vec const &decisions, T &method, std::chrono::milliseconds sol_time, argument_t arguments);
 
 #endif  // MAIN_H

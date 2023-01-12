@@ -36,7 +36,7 @@ void RiskMeasure::sensibilityCheck(void)
         throw std::runtime_error("lambdas and betas should have same length");
     } 
     double sum_lambdas = 0.0;
-    for(int i=0; i < lambdas.size(); i++){
+    for(size_t i=0; i < lambdas.size(); i++){
         sum_lambdas += lambdas.at(i);
         if(betas.at(i) < 0.0 || betas.at(i) >= 1.0){
             throw std::runtime_error("betas should be in interval [0, 1)");
@@ -57,7 +57,7 @@ void RiskMeasure::sensibilityCheck(void)
 double RiskMeasure::phi(double p)
 {  
     double res = 0.0; // initialize at zero
-    for(int i=0; i < lambdas.size(); i++){
+    for(size_t i=0; i < lambdas.size(); i++){
         if(p >= betas[i]){
             res += lambdas.at(i) / (1.0 - betas.at(i)); //iteratively add pieces
         }
@@ -82,7 +82,7 @@ std::vector<double> RiskMeasure::compute_weights(int num_scenarios)
         double cur_weight = RiskMeasure::phi(left) * (right - left);
 
         //next, add any additional blocks
-        for(int i = 0; i < lambdas.size(); i++){
+        for(size_t i = 0; i < lambdas.size(); i++){
             if((betas.at(i) > left) && (betas.at(i) < right)){                                  //if betas[i] == left, then already included in phi(left)
                 cur_weight += (right - betas.at(i)) * (lambdas.at(i) / (1.0 - betas.at(i)));    //add piece of this step that falls within the interval
             }
@@ -113,7 +113,7 @@ double RiskMeasure::compute_rho(std::vector<double> scenario_values){
 
     // compute rho
     double res = 0.0; // initialize result
-    for(int s=0; s < scenario_values.size(); s++){
+    for(size_t s=0; s < scenario_values.size(); s++){
         res += weights.at(s) * scenario_values.at(sorted_idx.at(s));
     }
 

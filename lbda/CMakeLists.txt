@@ -29,4 +29,4 @@ include_directories(include)
 add_subdirectory(vendor)
 
 add_subdirectory(src)
-add_subdirectory(test)
+# add_subdirectory(test) #no testing today

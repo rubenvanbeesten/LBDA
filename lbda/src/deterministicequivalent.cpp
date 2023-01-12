@@ -12,11 +12,17 @@ void DeterministicEquivalent::initFirstStage()
 {
     auto const &Amat = d_problem.Amat();
 
+    // create names for x variabels
+    std::string x_names[Amat.n_rows] = {""};
+    for(size_t i=0; i < Amat.n_rows; i++){
+        x_names[i] = "x_" + std::to_string(i);  // x_i
+    }
+
     auto *xVars = d_model.addVars(d_problem.firstStageLowerBound().memptr(),
                                   d_problem.firstStageUpperBound().memptr(),
                                   d_problem.firstStageCoeffs().memptr(),
                                   d_problem.firstStageVarTypes().memptr(),
-                                  nullptr,
+                                  x_names,
                                   d_problem.firstStageCoeffs().n_elem);
 
     GRBLinExpr lhs[Amat.n_cols];
@@ -53,12 +59,18 @@ void DeterministicEquivalent::initSecondStage()
         for (auto iter = Tmat.begin(); iter != Tmat.end(); ++iter)
             lhs[iter.col()] += *iter * xVars[iter.row()];  // Tx
 
+        // create names for y variabels
+        std::string y_names[Wmat.n_rows] = {""};
+        for(size_t i=0; i < Wmat.n_rows; i++){
+            y_names[i] = "y_" + std::to_string(scenario) + "_" + std::to_string(i);  // y_s_i
+        }
+
         // scenario-specific variables
         auto *yVars = d_model.addVars(d_problem.secondStageLowerBound().memptr(),
                                       d_problem.secondStageUpperBound().memptr(),
                                       costs.memptr(),
                                       d_problem.secondStageVarTypes().memptr(),
-                                      nullptr,
+                                      y_names,
                                       Wmat.n_rows);
 
         for (auto iter = Wmat.begin(); iter != Wmat.end(); ++iter)
@@ -80,6 +92,10 @@ void DeterministicEquivalent::initSecondStage()
     delete[] xVars;
 
     d_model.update();
+
+    // write the model
+    d_model.write("debug.lp");
+
 }
 
 std::unique_ptr<arma::vec> DeterministicEquivalent::solve(double timeLimit)
