@@ -239,9 +239,11 @@ void DeterministicEquivalent::initSecondStage()
         double rhs_tau[n_cvars] = {0.0}; // rhs equal to zero
 
         // define inequality senses
-        char senses_tau[n_cvars] = {GRB_GREATER_EQUAL}; // lhs >= rhs
-
-
+        char senses_tau[n_cvars];
+        for(int i = 0; i < n_cvars; i++){
+            senses_tau[i] = GRB_GREATER_EQUAL;  // lhs >= rhs
+        }
+    
         // add constraint: tau_{i,s} - q * y_s + u_i >= 0
         auto *constrs_tau = d_model.addConstrs(lhs_tau,     // lhs
                                                senses_tau,  // direction of inequality

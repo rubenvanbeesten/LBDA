@@ -109,7 +109,7 @@ std::vector<std::string> MasterProblem::getVarNames()
     std::vector<std::string> varNames;
     for(int i = 0; i < n_variables; i++){
         std::string curName = variables[i].get(GRB_StringAttr_VarName);
-        if(curName.at(0) == 'x' || curName.at(0) == 'u' || curName == "theta"){
+        if(curName.at(0) == 'x' || curName.at(0) == 'u'){ // || curName == "theta"){    // NOTE: we skip theta, as this is already contained in second stage costs
             varNames.push_back(curName);
         }
     }

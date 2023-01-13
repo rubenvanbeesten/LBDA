@@ -244,6 +244,8 @@ template<class T> void writeSolution(arma::vec const &decisions, T &method, std:
     }
     outfile << std::endl;
 
+    std::cin.get();
+
     // close the file
     outfile.close();    
 }

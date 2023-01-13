@@ -13,4 +13,6 @@ x write solution to file (and to screen)
     - otherwise we get numerical issues
 - test performance of lbda (does it work?)
     x compare new lbda with risk-neutral implementation (set risk measure to expectation)
-    - remaining problem: reading of multiple cvars goes wrong
+    - remaining problem: mogelijk gaat er iets mis met het outputten van de oplossing (heeft te maken met dat xVars[0] = theta)
+        - problem in sslp_5_25_100 -L 1.0 -B 0.0
+
