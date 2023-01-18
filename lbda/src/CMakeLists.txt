@@ -9,7 +9,7 @@ include_directories(${GUROBI_INCLUDE_DIRS})
 
 set(cutFamiliesSources
         cutfamilies/cutfamily.cpp
-        cutfamilies/loosebenders_new.cpp
+        cutfamilies/loosebenders.cpp
         cutfamilies/lpdual.cpp
         cutfamilies/strongbenders.cpp)
 
@@ -22,7 +22,7 @@ set(smpsSources
         smps/timeparser.cpp)
 
 set(lbdaSources
-        deterministicequivalent_new.cpp
+        deterministicequivalent.cpp
         masterproblem.cpp
         problemdata.cpp
         subproblem.cpp

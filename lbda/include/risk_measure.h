@@ -21,6 +21,9 @@ public:
     // constructor
     RiskMeasure(std::vector<double> lambdas_new, std::vector<double> betas_new);
 
+    // constructor from strings
+    RiskMeasure(std::string lambdaString, std::string betaString, int num_scenarios = 0);
+
     // destructor
     ~RiskMeasure();
 

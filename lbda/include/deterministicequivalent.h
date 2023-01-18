@@ -7,6 +7,10 @@
 #include <gurobi_c++.h>
 #include <iosfwd>
 #include <memory>
+#include <cmath>
+
+// new:
+#include "risk_measure.h"
 
 /**
  * Deterministic equivalent formulation of the two-stage problem. This is also
@@ -19,12 +23,14 @@ class DeterministicEquivalent
     GRBEnv d_env = GRBEnv();
     GRBModel d_model;
 
+    RiskMeasure d_risk_measure; // new
+
     void initFirstStage();
 
     void initSecondStage();
 
 public:
-    DeterministicEquivalent(ProblemData const &problem);
+    DeterministicEquivalent(ProblemData const &problem, RiskMeasure const risk_measure);
 
     /**
      * Solves the deterministic equivalent.
@@ -62,6 +68,12 @@ public:
     {
         return d_model.get(GRB_DoubleAttr_ObjVal);
     }
+
+    /**
+     * @return variable names
+     */
+    std::vector<std::string> getVarNames();
+    
 };
 
 #endif

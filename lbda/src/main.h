@@ -1,11 +1,10 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-//#include "cutfamilies/loosebenders.h"
-#include "cutfamilies/loosebenders_new.h"
+#include "cutfamilies/loosebenders.h"
 #include "cutfamilies/lpdual.h"
 #include "cutfamilies/strongbenders.h"
-//#include "deterministicequivalent.h"
+#include "deterministicequivalent.h"
 #include "masterproblem.h"
 
 #include <cstring>
@@ -21,7 +20,7 @@
 #include<sys/stat.h>    // mkdir
 #include<sys/types.h>   // mkdir
 #include "risk_measure.h"
-#include "deterministicequivalent_new.h"
+
 
 auto const USAGE = R"(
 LBDA+. A program for solving two-stage mixed-integer stochastic programs.

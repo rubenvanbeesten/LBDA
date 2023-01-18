@@ -18,6 +18,42 @@ RiskMeasure::RiskMeasure(std::vector<double> lambdas_new, std::vector<double> be
     
 }
 
+// Constructor from string
+RiskMeasure::RiskMeasure(std::string lambdaString, std::string betaString, int num_scenarios) {
+    
+    if(lambdaString == "integral"){
+        // integral risk measure: set lambdas and betas based on number of scenarios
+
+        // initialize vectors
+        lambdas = std::vector<double>(num_scenarios);
+        betas = std::vector<double>(num_scenarios);
+
+        // compute values
+        for(int i=0; i < num_scenarios; i++){
+            betas.at(i) = 1.0 * i / num_scenarios;      // beta[i] = i/N
+            if(i == 0){
+                lambdas.at(i) = 1.0 / num_scenarios;    // lambda[0] = 1/N
+            }else{
+                lambdas.at(i) = 2.0 * (1.0 - 1.0* i / num_scenarios) / num_scenarios;   // lambda[i] = 2 * (1 - i/N) / N
+            }
+        }
+
+        // set values
+        //lambdas = lambdas_new;
+        //betas = betas_new;
+
+    }else{
+        // normal risk measure: read lambdas and betas
+        lambdas = str_to_double_vec(lambdaString);
+        betas = str_to_double_vec(betaString);
+    }
+
+ 
+    // do a sensibility check
+    RiskMeasure::sensibilityCheck();
+    
+}
+
 // Destructor
 RiskMeasure::~RiskMeasure(void) {
     // do nothing

@@ -9,10 +9,10 @@ x find all places where objective function is implicitly computed using expected
 x write solution to file (and to screen)
     x measure solution time
     x change file name based on method
-- figure out a way to set a lower bound on u_i
-    - otherwise we get numerical issues
-- test performance of lbda (does it work?)
+x figure out a way to set a lower bound on u_i
+    x for now: just use 10e6
+x test performance of lbda (does it work?)
     x compare new lbda with risk-neutral implementation (set risk measure to expectation)
-    - remaining problem: mogelijk gaat er iets mis met het outputten van de oplossing (heeft te maken met dat xVars[0] = theta)
-        - problem in sslp_5_25_100 -L 1.0 -B 0.0
+    x remaining problem: mogelijk gaat er iets mis met het outputten van de oplossing (heeft te maken met dat xVars[0] = theta)
+        x opgelost. probleem was dat in getVarNames ook theta mee werd genomen, terwijl in decisions alleen de x-variabelen zaten
 

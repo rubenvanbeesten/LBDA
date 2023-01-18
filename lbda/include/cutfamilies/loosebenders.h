@@ -2,7 +2,11 @@
 #define LOOSEBENDERS_H
 
 #include "cutfamily.h"
+#include <vector>
+#include <numeric>      // std::iota
+#include <algorithm>    // std::sort, std::stable_sort
 
+#include "risk_measure.h"
 
 class LooseBenders : public CutFamily
 {
@@ -10,6 +14,8 @@ class LooseBenders : public CutFamily
 
     GRBConstr *d_constrs;
     GRBVar *d_vars;
+
+    RiskMeasure d_risk_measure;
 
     // For each scenario, we store the basis matrices that we have visited
     // (encoded by vBasis, cBasis).
@@ -30,6 +36,7 @@ class LooseBenders : public CutFamily
 
 public:
     LooseBenders(ProblemData const &problem,
+                 RiskMeasure const &risk_measure,
                  arma::vec const alpha,
                  double timeLimit = 1e2);
 

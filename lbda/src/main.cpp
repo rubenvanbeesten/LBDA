@@ -24,7 +24,7 @@ try
     }
     
     // store risk measure
-    auto risk_measure = RiskMeasure(str_to_double_vec(arguments.lambdaString), str_to_double_vec(arguments.betaString)); // convert lambda and beta strings to vector<double>
+    auto risk_measure = RiskMeasure(arguments.lambdaString, arguments.betaString, problem.nScenarios()); 
 
     
     // check the solution method
@@ -243,8 +243,6 @@ template<class T> void writeSolution(arma::vec const &decisions, T &method, std:
         outfile << varNames.at(i) << " = " << decisions.at(i) << std::endl;
     }
     outfile << std::endl;
-
-    std::cin.get();
 
     // close the file
     outfile.close();    
