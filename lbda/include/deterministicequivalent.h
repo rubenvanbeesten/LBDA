@@ -73,6 +73,11 @@ public:
      * @return variable names
      */
     std::vector<std::string> getVarNames();
+
+    /**
+     * Fix the first stage variables
+     */
+    void fixFirstStageVariables(std::vector<std::string> fixedVarNames, std::vector<double> fixedVarValues);
     
 };
 

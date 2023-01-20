@@ -59,10 +59,16 @@ void MasterProblem::addCut(CutFamily::Cut const &cut)
 }
 
 std::unique_ptr<arma::vec> MasterProblem::solveWith(CutFamily &cutFamily,
+                                                    double timeLimit,
                                                     double tol)
 {
-    while (true)
-    {
+    // track time
+    auto master_start_time = std::chrono::high_resolution_clock::now(); // start time
+    
+    auto cur_sol_time = std::chrono::duration_cast<std::chrono::milliseconds>(master_start_time - master_start_time);  // current solution time = 0
+
+    while(true) // end if time limit is exceeded
+    {   
         d_model.optimize();
 
         if (d_model.get(GRB_IntAttr_Status) != GRB_OPTIMAL)
@@ -84,9 +90,22 @@ std::unique_ptr<arma::vec> MasterProblem::solveWith(CutFamily &cutFamily,
 
         // Is the proposed cut violated by the current solution?
         if (cut.gamma + arma::dot(xVals, cut.beta) >= theta + tol)
+        {
             addCut(cut);
-        else
+        }
+        else {
             return std::make_unique<arma::vec>(xVals);
+        }
+            
+
+        // track time
+        auto cur_time = std::chrono::high_resolution_clock::now();  // current time
+        cur_sol_time = std::chrono::duration_cast<std::chrono::milliseconds>(cur_time - master_start_time);  // current solution time
+
+        if(cur_sol_time.count() > 1000.0 * timeLimit) {
+            std::cout << "Time limit reached. " << std::endl;
+            return std::make_unique<arma::vec>(xVals);
+        }
     }
 }
 

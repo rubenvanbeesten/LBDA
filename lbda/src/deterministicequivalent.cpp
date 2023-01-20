@@ -347,3 +347,17 @@ std::vector<std::string> DeterministicEquivalent::getVarNames()
     }
     return varNames;
 }
+
+void DeterministicEquivalent::fixFirstStageVariables(std::vector<std::string> fixedVarNames, std::vector<double> fixedVarValues)
+{
+    // fix the gurobi variables
+    // Fix x variables  TODO: TEST IF THIS WORKS. Probably move this stuff to deterministicequivalent.cpp, just pass the vectors from here.
+    for(size_t i = 0; i < fixedVarNames.size(); i++){
+        // first try:
+        //d_model.getVarByName(fixedVarNames[i]).lb = fixedVarValues[i];    // set lb equal to fixed value
+        //d_model.getVarByName(fixedVarNames[i]).ub = fixedVarValues[i];    // set ub equal to fixed value                
+
+        d_model.getVarByName(fixedVarNames[i]).set(GRB_DoubleAttr_LB, fixedVarValues[i]);    // set lb equal to fixed value
+        d_model.getVarByName(fixedVarNames[i]).set(GRB_DoubleAttr_UB, fixedVarValues[i]);    // set ub equal to fixed value
+    }
+}

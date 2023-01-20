@@ -17,6 +17,8 @@
 #include <vector>
 #include <chrono>
 #include <fstream>
+#include <string>
+#include <sstream>
 #include<sys/stat.h>    // mkdir
 #include<sys/types.h>   // mkdir
 #include "risk_measure.h"
@@ -65,12 +67,14 @@ struct Arguments
     enum MethodType
     {
         DETERMINISTIC_EQUIVALENT,
-        DECOMPOSITION
+        DECOMPOSITION,
+        FIXED_X
     };
 
     MethodType methodType = DECOMPOSITION;  // solution method to use
     CutType cutType = LOOSE_BENDERS;        // cut family to use
     double timeLimit = arma::datum::inf;    // max. solve time in seconds
+    double subTimeLimit = arma::datum::inf; // max. subproblem solve time in seconds
     bool printUsage = false;                // print help text?
     double lb = 0;                          // lower bound on theta
     double ub = arma::datum::inf;           // upper bound on theta
@@ -113,6 +117,19 @@ template<class T> void printSolution(arma::vec const &decisions, T &method, std:
  * @param method    Solution method used - the deterministic equivalent, or the
  *                  first-stage master problem.
  */
-template<class T> void writeSolution(arma::vec const &decisions, T &method, std::chrono::milliseconds sol_time, argument_t arguments);
+template<class T> void writeSolutionReport(arma::vec const &decisions, T &method, std::chrono::milliseconds sol_time, argument_t arguments, double mipGap = -1.0);
+
+/**
+ * Writes the first-stage decisions to a csv file
+ *
+ * @param decisions Near optimal first-stage decisions, as a vector.
+ * @param method    Solution method used - the deterministic equivalent, or the
+ *                  first-stage master problem.
+ */
+template<class T> void writeFirstStageSolution(arma::vec const &decisions, T &method, argument_t arguments);
+
+
+void parseFirstStageSolution(std::string solFileName, std::vector<std::string> &fixedVarNames, std::vector<double> &fixedVarValues);
+//void parseFirstStageSolution(std::string solFileName);
 
 #endif  // MAIN_H
