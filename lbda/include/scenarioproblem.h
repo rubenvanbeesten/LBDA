@@ -1,5 +1,5 @@
-#ifndef DETERMINISTICEQUIVALENT_H
-#define DETERMINISTICEQUIVALENT_H
+#ifndef SCENARIOPROBLEM_H
+#define SCENARIOPROBLEM_H
 
 #include "problemdata.h"
 
@@ -13,32 +13,28 @@
 #include "risk_measure.h"
 
 /**
- * Deterministic equivalent formulation of the two-stage problem. This is also
- * sometimes called the extensive form.
+ * Second-stage scenario problem.
  */
-class DeterministicEquivalent
+class ScenarioProblem
 {
     ProblemData const &d_problem;
 
     GRBEnv d_env = GRBEnv();
     GRBModel d_model;
 
-    RiskMeasure d_risk_measure; // new
-
     void initFirstStage();
-
     void initSecondStage();
 
 public:
-    DeterministicEquivalent(ProblemData const &problem, RiskMeasure const risk_measure);
+    ScenarioProblem(ProblemData const &problem);
 
     /**
-     * Solves the deterministic equivalent.
+     * Solves the scenario problem.
      *
      * @param timeLimit Time limit for the Gurobi solver, in seconds.
-     * @return Vector of optimal first-stage decisions, or best so far.
+     * @return objective value
      */
-    std::unique_ptr<arma::vec> solve(double timeLimit = arma::datum::inf);
+    double solve(double timeLimit = arma::datum::inf);
 
     /**
      * @return True if the model was solved to optimality, false otherwise.
@@ -49,17 +45,17 @@ public:
      * @return Returns the optimality gap of the solution returned by
      *         <code>solve</code>.
      */
-    double mipGap() const;
+    //double mipGap() const;
 
     /**
      * @return First-stage objective value.
      */
-    double firstStageObjective();
+    //double firstStageObjective();
 
     /*
      * @return expected cost-to-go of the second-stage.
      */
-    double secondStageObjective();
+    //double secondStageObjective();
 
     /**
      * @return Objective value.
@@ -77,12 +73,12 @@ public:
     /**
      * Fix the first stage variables
      */
-    void fixFirstStageVariables(std::vector<std::string> fixedVarNames, std::vector<double> fixedVarValues);
+    //void fixFirstStageVariables(std::vector<std::string> fixedVarNames, std::vector<double> fixedVarValues);
 
     /**
      * Get the best lower bound
      */
-    double getBestBound(void);
+    //double getBestBound(void);
     
 };
 

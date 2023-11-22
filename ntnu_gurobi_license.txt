@@ -1,0 +1,6 @@
+# Gurobi WLS license file
+# Your credentials are private and should not be shared or copied to public repositories.
+# Visit https://license.gurobi.com/manager/doc/overview for more information.
+WLSACCESSID=1e3cfd6f-e62e-4656-8521-3f44813abf7d
+WLSSECRET=305570f0-ab79-459e-873b-6e06771ac783
+LICENSEID=919392

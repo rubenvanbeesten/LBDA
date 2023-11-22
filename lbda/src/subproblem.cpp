@@ -4,6 +4,8 @@
 SubProblem::SubProblem(ProblemData const &problem) :
     d_model(d_env), d_problem(problem)
 {
+    d_model.set("OutputFlag", "0");
+    
     auto const &Wmat = d_problem.Wmat();
 
     arma::Col<char> vTypes(Wmat.n_rows);  // TODO allow second-stage int?

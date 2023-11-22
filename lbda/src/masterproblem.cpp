@@ -135,3 +135,7 @@ std::vector<std::string> MasterProblem::getVarNames()
 
     return varNames;
 }
+
+double MasterProblem::getBestBound(void){
+    return d_model.get(GRB_DoubleAttr_ObjBound);
+}

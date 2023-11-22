@@ -361,3 +361,8 @@ void DeterministicEquivalent::fixFirstStageVariables(std::vector<std::string> fi
         d_model.getVarByName(fixedVarNames[i]).set(GRB_DoubleAttr_UB, fixedVarValues[i]);    // set ub equal to fixed value
     }
 }
+
+double DeterministicEquivalent::getBestBound(void)
+{
+    return d_model.get(GRB_DoubleAttr_ObjBound);
+}

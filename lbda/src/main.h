@@ -107,7 +107,7 @@ argument_t parseArguments(int argc, char **argv);
  * @param method    Solution method used - the deterministic equivalent, or the
  *                  first-stage master problem.
  */
-template<class T> void printSolution(arma::vec const &decisions, T &method, std::chrono::milliseconds sol_time);
+template<class T> void printSolution(arma::vec const &decisions, T &method, std::chrono::milliseconds sol_time, double mipGap);
 
 /**
  * Writes the (near) optimal first-stage decisions passed in, and some objective
@@ -118,6 +118,10 @@ template<class T> void printSolution(arma::vec const &decisions, T &method, std:
  *                  first-stage master problem.
  */
 template<class T> void writeSolutionReport(arma::vec const &decisions, T &method, std::chrono::milliseconds sol_time, argument_t arguments, double mipGap = -1.0);
+
+// write results to a line in a csv file
+template<class T> void writeResultsTable(T &method, std::chrono::milliseconds sol_time, argument_t arguments, double mipGap);
+
 
 /**
  * Writes the first-stage decisions to a csv file

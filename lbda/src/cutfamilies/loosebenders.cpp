@@ -17,7 +17,7 @@ LooseBenders::LooseBenders(ProblemData const &problem,
     d_risk_measure(risk_measure),
     d_visited(problem.nScenarios()),
     d_objectives(problem.nScenarios())
-{
+{   
     auto const &Wmat = d_problem.Wmat();
 
     d_vars = d_model.addVars(d_problem.secondStageLowerBound().memptr(),
@@ -53,6 +53,15 @@ LooseBenders::~LooseBenders()
 
 LooseBenders::Cut LooseBenders::computeCut(arma::vec const &x)
 {
+    // track time
+    //auto start_time_cut = std::chrono::high_resolution_clock::now(); // start time        
+    //double sol_time_cut = 0.0;
+    //double inside_time = 0.0;
+    //double first_time = 0.0;
+    //double second_time = 0.0;
+    //double third_time = 0.0;
+
+
     auto const &Tmat = d_problem.Tmat(); 
     arma::vec Tx = Tmat.t() * x;
 
@@ -70,13 +79,24 @@ LooseBenders::Cut LooseBenders::computeCut(arma::vec const &x)
     std::vector<arma::vec> betaVec(d_problem.nScenarios(), arma::zeros(x.n_elem));  // vector of beta coefficient vectors; one for each scenario
     std::vector<double>    uVec(d_problem.nScenarios(), 0.0);                       // vector of "u" values to be sorted (i.e., the value function objective values)
 
+    auto start_time_loop = std::chrono::high_resolution_clock::now(); // start time        
 
     for (size_t scenario = 0; scenario != d_problem.nScenarios(); ++scenario)
     {
+        //auto start_time_inside = std::chrono::high_resolution_clock::now(); // start time    
+        //auto start_first_time = std::chrono::high_resolution_clock::now(); // start time    
+
         arma::vec omega = d_problem.scenarios().col(scenario);
 
-        d_sub.updateRhs(omega - Tx);
+        d_sub.updateRhs(omega - Tx);    // note: RHS is updated, we don't create a completely new subproblem
+        //std::cout << "Solving subproblem..." << std::endl;
+        //auto start_time_sub = std::chrono::high_resolution_clock::now(); // start time        
         d_sub.solve();
+        //auto stop_time_sub = std::chrono::high_resolution_clock::now();  // stop time            
+        //auto sol_time_sub = std::chrono::duration_cast<std::chrono::microseconds>(stop_time_sub - start_time_sub);
+        //sol_time_cut += sol_time_sub.count()/1000.0;
+        //std::cout << "Finished solving subproblem." << std::endl;
+        //std::cout << "Solution time: " << sol_time_sub.count() << " milliseconds" << std::endl << std::endl;
 
         auto const basis = d_sub.basisInfo();
         auto const duals = d_sub.duals();
@@ -88,7 +108,22 @@ LooseBenders::Cut LooseBenders::computeCut(arma::vec const &x)
         // lambda^T alpha.
         arma::vec rhs = omega - d_alpha;
 
+        //auto stop_first_time = std::chrono::high_resolution_clock::now(); // start time
+        //auto cur_first_time = std::chrono::duration_cast<std::chrono::microseconds>(stop_first_time - start_first_time);
+        //first_time += cur_first_time.count()/1000.0;
+
+        //auto start_second_time = std::chrono::high_resolution_clock::now(); // start time
+
         double res = computeGomory(scenario, rhs, basis.vBasis, basis.cBasis);
+
+        //auto stop_second_time = std::chrono::high_resolution_clock::now(); // start time
+        //auto cur_second_time = std::chrono::duration_cast<std::chrono::microseconds>(stop_second_time - start_second_time);
+        //second_time += cur_second_time.count()/1000.0;
+        //std::cout << "Outside time Gomory: " << cur_second_time.count()/1000.0 << std::endl;
+
+        //auto start_third_time = std::chrono::high_resolution_clock::now(); // start time
+
+
         res += arma::dot(duals.lambda, d_alpha);
 
         // extract cut coefficients of this scenario // NOTE: chedk if duals.lambdas is correct below
@@ -100,13 +135,27 @@ LooseBenders::Cut LooseBenders::computeCut(arma::vec const &x)
         deltaVec[scenario] = cur_delta;  // store current delta value
         betaVec[scenario] = cur_beta;   // store current beta value
         uVec[scenario] = cur_u;         // store current cut value (to be sorted)
+
+        //auto stop_third_time = std::chrono::high_resolution_clock::now(); // start time
+        //auto cur_third_time = std::chrono::duration_cast<std::chrono::microseconds>(stop_third_time - start_third_time);
+        //third_time += cur_third_time.count()/1000.0;
+
+        //auto stop_time_inside = std::chrono::high_resolution_clock::now(); // stop time        
+        //auto cur_inside_time = std::chrono::duration_cast<std::chrono::microseconds>(stop_time_inside - start_time_inside);
+        //inside_time += cur_inside_time.count()/1000.0;
     }
+    //auto stop_time_loop = std::chrono::high_resolution_clock::now(); // start time       
+    //auto loop_time = std::chrono::duration_cast<std::chrono::microseconds>(stop_time_loop - start_time_loop);
+ 
+
   
     // TO DO:
     // 1. compute weights associated with risk measure (per scenario)                    --- function in risk measure class
     std::vector<double> weights = d_risk_measure.compute_weights(d_problem.nScenarios());
 
     // 2. sort uVec; store indices                                                     --- use function sort_indices
+    auto start_time_sort = std::chrono::high_resolution_clock::now(); // start time        
+
 
     // input vector: std::vector<double> uVec 
 
@@ -117,10 +166,10 @@ LooseBenders::Cut LooseBenders::computeCut(arma::vec const &x)
         idx_counter++;
     }
 
-    // TEMPORARY: this is how one would output uVec in sorted order
-    for (size_t i=0; i < sorted_idx.size(); i++){
-        std::cout << sorted_idx.at(i) << ": " << uVec.at(sorted_idx.at(i)) << std::endl;
-    }
+    auto stop_time_sort = std::chrono::high_resolution_clock::now();  // stop time            
+    auto sort_time = std::chrono::duration_cast<std::chrono::microseconds>(stop_time_sort - start_time_sort);
+
+
 
     // 3. multiply weights by associated gamma and lambda values to create the cut
     
@@ -136,6 +185,23 @@ LooseBenders::Cut LooseBenders::computeCut(arma::vec const &x)
             beta[i] += cur_weight * betaVec.at(s).at(i);
         }
     }
+
+    //auto stop_time_cut = std::chrono::high_resolution_clock::now();  // stop time            
+    //auto total_time_cut = std::chrono::duration_cast<std::chrono::microseconds>(stop_time_cut - start_time_cut);
+    
+    //std::cout << std::endl;
+    //std::cout << "Total time cut: " << total_time_cut.count()/1000.0 << " milliseconds" << std::endl << std::endl;
+    //std::cout << "Solution time cut: " << sol_time_cut << " milliseconds" << std::endl << std::endl << std::endl;
+    //std::cout << "Sort time cut: " << sort_time.count()/1000.0 << " milliseconds" << std::endl << std::endl;
+    //std::cout << "Loop time cut: " << loop_time.count()/1000.0 << " milliseconds" << std::endl << std::endl;
+    //std::cout << "Inside time cut: " << inside_time << " milliseconds" << std::endl << std::endl;
+
+    //std::cout << "First time cut: " << first_time << " milliseconds" << std::endl << std::endl;
+    //std::cout << "Second time cut: " << second_time << " milliseconds" << std::endl << std::endl;
+    //std::cout << "Third time cut: " << third_time << " milliseconds" << std::endl << std::endl;
+
+
+
 
     
     // 4. return the cut
@@ -153,6 +219,8 @@ double LooseBenders::computeGomory(size_t scenario,
                                    arma::Col<int> const &vBasis,
                                    arma::Col<int> const &cBasis)
 {
+    //auto start_time_gom = std::chrono::high_resolution_clock::now(); // start time        
+
     auto const &Wmat = d_problem.Wmat();
 
     // TODO make this more efficient?
@@ -173,7 +241,11 @@ double LooseBenders::computeGomory(size_t scenario,
     }
 
     update(rhs, vBasis, cBasis);
+    //auto start_time_gom_solve = std::chrono::high_resolution_clock::now(); // start time        
     d_model.optimize();
+    //auto stop_time_gom_solve = std::chrono::high_resolution_clock::now();  // stop time            
+    //auto sol_time_gom_solve = std::chrono::duration_cast<std::chrono::microseconds>(stop_time_gom_solve - start_time_gom_solve);
+    
 
     // Either optimal objective value, or best known lower bound (the latter
     // often in case of a time out).
@@ -183,6 +255,12 @@ double LooseBenders::computeGomory(size_t scenario,
 
     visited.emplace_back(basis);
     d_objectives[scenario].emplace_back(objective);
+
+    //auto stop_time_gom = std::chrono::high_resolution_clock::now();  // stop time            
+    //auto sol_time_gom = std::chrono::duration_cast<std::chrono::microseconds>(stop_time_gom - start_time_gom);
+    //std::cout << "Inside time Gomory: " << sol_time_gom.count()/1000.0 << " milliseconds" << std::endl;
+    //std::cout << "Solution time Gomory: " << sol_time_gom_solve.count()/1000.0 << " milliseconds" << std::endl;
+
 
     return objective;
 }

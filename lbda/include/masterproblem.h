@@ -83,6 +83,10 @@ public:
      * Returns the variable names of the master problem
      */
     std::vector<std::string> getVarNames();
+    
+    
+    // not used:
+    double getBestBound(void);
 
 };
 

@@ -58,19 +58,26 @@ try
             }
 
             // solve problem
+            std::cout << "Starting LBDA..." << std::endl;
             auto start_time = std::chrono::high_resolution_clock::now(); // start time
             auto solution = master.solveWith(*cutFamily, arguments.timeLimit);   // solve model
             auto decisions = *solution;                     // extract solution
             auto stop_time = std::chrono::high_resolution_clock::now();  // stop time            
             auto sol_time = std::chrono::duration_cast<std::chrono::milliseconds>(stop_time - start_time);
+            std::cout << "LBDA finished." << std::endl;
 
             delete cutFamily;
 
+            double mipGap = -1.0;           // note: mipGap = -1.0 used because it is irrelevant
+
             // print solution
-            printSolution(decisions, master, sol_time);
+            printSolution(decisions, master, sol_time, mipGap);
 
             // write solution report to file
             writeSolutionReport(decisions, master, sol_time, arguments);
+
+            // write solution to results table
+            writeResultsTable(master, sol_time, arguments, mipGap);   
 
             // write first stage solution to csv file
             writeFirstStageSolution(decisions, master, arguments);
@@ -92,12 +99,15 @@ try
 
 
             // print solution
-            printSolution(decisions, deq, sol_time);
+            printSolution(decisions, deq, sol_time, deq.mipGap());
             // report optimality gap
             std::cout << std::endl << "Gap (%) = " << deq.mipGap() << "%\n";
 
             // write solution report to file
             writeSolutionReport(decisions, deq, sol_time, arguments, deq.mipGap());
+
+            // write solution to results table
+            writeResultsTable(deq, sol_time, arguments, deq.mipGap());
 
             // write first stage solution to csv file
             writeFirstStageSolution(decisions, deq, arguments);
@@ -121,8 +131,6 @@ try
             solFileName += "_decom.csv";
 
             std::cout << "solFileName = " << solFileName << std::endl;
-
-            std::cin.get();
             
             //std::string solFileName = "first_stage_solution/sizes3_1.0_0.0_decom.csv";  // TEMPORARY
             //std::string solFileName = "first_stage_solution/sizes3_1.0_0.0_deq.csv";  // TEMPORARY
@@ -136,8 +144,6 @@ try
                 std::cout << fixedVarNames[i] << " = " << fixedVarValues[i] << std::endl;
             }
 
-            std::cin.get();
-            
             std::cout << "Fixing first stage variables...";
             deq.fixFirstStageVariables(fixedVarNames, fixedVarValues);
             std::cout << " done." << std::endl;
@@ -151,12 +157,16 @@ try
 
 
             // print solution
-            printSolution(decisions, deq, sol_time);
+            printSolution(decisions, deq, sol_time, deq.mipGap());
+
             // report optimality gap
             std::cout << std::endl << "Gap (%) = " << deq.mipGap() << "%\n";
 
             // write solution report to file
             writeSolutionReport(decisions, deq, sol_time, arguments, deq.mipGap());
+
+            // write solution to results table
+            writeResultsTable(deq, sol_time, arguments, deq.mipGap());
 
             // write first stage solution to csv file
             writeFirstStageSolution(decisions, deq, arguments);
@@ -251,7 +261,7 @@ argument_t parseArguments(int argc, char **argv)
 }
 
 
-template<class T> void printSolution(arma::vec const &decisions, T &method, std::chrono::milliseconds sol_time)
+template<class T> void printSolution(arma::vec const &decisions, T &method, std::chrono::milliseconds sol_time, double mipGap)
 {
     // print solution
     std::cout << "First-stage decisions:" << std::endl;
@@ -261,12 +271,17 @@ template<class T> void printSolution(arma::vec const &decisions, T &method, std:
     }
     std::cout << std::endl;
 
+
     // print objective information
     std::cout << "Objective information:" << std::endl;
     std::cout << "Obj.    = " << method.objective() << '\n';            // objective value
     std::cout << "c^T x   = " << method.firstStageObjective() << '\n';  // first stage objective value
     std::cout << "Q(x)    = " << method.secondStageObjective() << '\n'; // second-stage objective value
     std::cout << std::endl;
+
+    if(mipGap != -1.0){
+        std::cout << "MIP Gap: " << mipGap << "%" << std::endl << std::endl;
+    }
     
     // print solution time
     std::cout << "Solution time: " << (sol_time.count()/1000.0) << " seconds" << std::endl;
@@ -311,9 +326,13 @@ template<class T> void writeSolutionReport(arma::vec const &decisions, T &method
     outfile << "Obj.    = " << method.objective() << '\n';            // objective value
     outfile << "c^T x   = " << method.firstStageObjective() << '\n';  // first stage objective value
     outfile << "Q(x)    = " << method.secondStageObjective() << '\n'; // second-stage objective value
+
     outfile << std::endl;
     if(mipGap != -1.0){
         outfile << "MIP Gap: " << mipGap << "%" << std::endl << std::endl;
+    }
+    if(arguments.methodType == arguments.DETERMINISTIC_EQUIVALENT){
+        outfile << "Best lower bound: " << method.getBestBound() << std::endl << std::endl;
     }
    
     // write solution
@@ -323,6 +342,63 @@ template<class T> void writeSolutionReport(arma::vec const &decisions, T &method
         outfile << varNames.at(i) << " = " << decisions.at(i) << std::endl;
     }
     outfile << std::endl;
+
+    // close the file
+    outfile.close();   
+}
+
+
+template<class T> void writeResultsTable(T &method, std::chrono::milliseconds sol_time, argument_t arguments, double mipGap)
+{   
+    // 1. Create file
+    // file name
+    std::string outfilename = "results_table.csv";
+
+    // create file object
+    std::ofstream outfile;
+    // check if file already exists
+    std::ifstream f(outfilename.c_str());
+    if(f.good()){
+        // if file exists, open file in append mode
+        outfile.open(outfilename, std::ios_base::app);    
+    }else{
+        // if file does not exist, create it
+        outfile.open(outfilename);
+        // also add first line
+        outfile << "instance;risk_measure;method;objective;mip_gap;solution_time" << std::endl;
+    }
+
+    // 2. Process information
+    // problem (instance) name
+    std::string problem_path = arguments.file;
+    std::string problem_name = problem_path.substr(problem_path.find_last_of("/") + 1);
+    // method name
+    std::string method_name;
+    if(arguments.methodType == arguments.DETERMINISTIC_EQUIVALENT){
+        method_name = "DEQ";
+    }else if(arguments.methodType == arguments.DECOMPOSITION){
+        method_name = "decom";
+    }else if(arguments.methodType == arguments.FIXED_X){
+        method_name = "fixed";
+    }
+    // risk measure
+    std::string risk_measure_name;
+    if(arguments.lambdaString == "1.0" && arguments.betaString == "0.0"){
+        risk_measure_name = "expectation";
+    }else if(arguments.lambdaString == "1.0") {
+        risk_measure_name = "CVaR_" + arguments.betaString;
+    }else if(arguments.lambdaString == "0.5,0.5"){
+        risk_measure_name = "mean-CVaR";
+    }else if(arguments.lambdaString == "integral"){
+        risk_measure_name = "integral";
+    }else{
+        risk_measure_name = "rho_" + arguments.lambdaString + "_" + arguments.betaString;
+    }
+
+
+    
+    // 3. Write current run information to file
+    outfile << problem_name << ";" << risk_measure_name << ";" << method_name << ";" << method.objective() << ";" << mipGap << ";" << (sol_time.count()/1000.0) << std::endl;
 
     // close the file
     outfile.close();   
@@ -399,7 +475,7 @@ void parseFirstStageSolution(std::string solFileName, std::vector<std::string> &
         if(content[i].size() == 2){ // should be two entries in the row
             if(content[i][0].at(0) == 'x'){ // check if variable name starts with "x"
                 fixedVarNames.push_back(content[i][0]);
-                fixedVarValues.push_back(stod(content[i][1]));    
+                fixedVarValues.push_back(abs(stod(content[i][1])));    
             }           
         }else{
             throw std::runtime_error("Number of entries is not equal to two.");
